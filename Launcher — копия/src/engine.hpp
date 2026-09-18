@@ -11,23 +11,39 @@ struct NewsItem {
     std::wstring imagePath;
 };
 
+struct InfoCard {
+    std::wstring title;
+    std::wstring text;
+};
+
 struct CodexData {
+    // Main Page Content
+    std::vector<std::wstring> ticker;
+    std::wstring hero_eyebrow;
+    std::wstring hero_title;
+    std::wstring hero_media;
+    std::wstring hero_kind;
+    std::wstring hero_caption;
+    std::wstring lede;
+    std::vector<InfoCard> cards;
+
+    // Codex Rules
     std::wstring eyebrow;
     std::wstring title;
-    std::wstring lede;
+    std::wstring codex_lede;
     std::vector<std::wstring> rules;
 };
 
 struct LaunchConfig {
-    std::wstring host = L"zis.inflexus.world";
+    std::wstring host = L"188.124.54.28";
     int port = 25666;
     std::wstring javaArgs = L"-Xmx{RAM}m -Xms256m -Dfile.encoding=UTF-8";
     bool lockToServer = true;
-    std::wstring newsUrl = L"http://zis.inflexus.world/news.json";
-    std::wstring contentUrl = L"http://zis.inflexus.world/content.json";
-    std::wstring indexUrl = L"http://zis.inflexus.world/download/cloud/index.json";
-    std::wstring packBase = L"http://zis.inflexus.world/download/cloud/";
-    std::wstring launcherUrl = L"http://zis.inflexus.world/download/DynastyLauncher.exe";
+    std::wstring newsUrl = L"http://188.124.54.28/news.json";
+    std::wstring contentUrl = L"http://188.124.54.28/content.json";
+    std::wstring indexUrl = L"http://188.124.54.28/download/cloud/index.json";
+    std::wstring packBase = L"http://188.124.54.28/download/cloud/";
+    std::wstring launcherUrl = L"http://188.124.54.28/download/DynastyLauncher.exe";
 };
 
 struct LaunchState {
