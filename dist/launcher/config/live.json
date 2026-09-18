@@ -1,0 +1,26 @@
+{
+  "schema": "dynasty.live.v1",
+  "revision": 2,
+  "index_url": "http://zis.inflexus.world/download/cloud/index.json",
+  "pack_base": "http://zis.inflexus.world/download/cloud/",
+  "launcher_url": "http://zis.inflexus.world/download/DynastyLauncher.exe",
+  "settings": {
+    "enable_news": true,
+    "java_args": "-Xmx{RAM}m -Xms256m -Dfile.encoding=UTF-8",
+    "server_host": "zis.inflexus.world",
+    "server_port": 25666,
+    "lock_to_server": true,
+    "news_url": "http://zis.inflexus.world/news.json",
+    "content_url": "http://zis.inflexus.world/content.json"
+  },
+  "ui": {
+    "dock.play": "Играть",
+    "dock.loading": "Загрузка",
+    "dock.launched": "В игре",
+    "dock.nick_placeholder": "Никнейм",
+    "dock.keep_launcher": "Не закрывайте лаунчер, пока играете"
+  },
+  "links": {
+    "site": "../site/index.html"
+  }
+}

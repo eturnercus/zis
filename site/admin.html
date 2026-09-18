@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Админ — Dynasty of Rot</title>
+  <link rel="icon" href="img/crest.png" type="image/png">
+  <link rel="stylesheet" href="css/app.css?v=30">
+  <style>
+    .admin { max-width: 860px; margin: 24px auto 80px; padding: 0 20px; }
+    .admin h1 { font-family: var(--serif); margin: 0 0 8px; }
+    .admin p.hint { opacity: .8; margin: 0 0 20px; }
+    .admin label { display: block; margin: 12px 0 4px; font-size: .85rem; letter-spacing: .04em; text-transform: uppercase; }
+    .admin input, .admin textarea { width: 100%; box-sizing: border-box; background: #07040c; color: #f3e8ff; border: 1px solid rgba(243,232,255,.35); padding: 10px 12px; font: inherit; }
+    .admin textarea { min-height: 88px; resize: vertical; }
+    .admin .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    .admin .item { border: 1px solid rgba(243,232,255,.25); padding: 12px; margin: 12px 0; }
+    .admin .err { color: #ffb4b4; min-height: 1.4em; }
+    .admin .ok { color: #b8f5c8; min-height: 1.4em; }
+    .admin h2 { font-family: var(--serif); margin: 28px 0 8px; font-size: 1.35rem; }
+    .admin .preview { display:none; max-width: 280px; max-height: 160px; margin-top: 8px; }
+    #panel { display: none; }
+    #login-box { max-width: 420px; }
+  </style>
+</head>
+<body>
+  <header class="bar">
+    <a class="logo" href="index.html"><span class="mark" aria-hidden="true"></span><span>DYNASTY</span><em>OF</em><span>ROT</span><b class="beta">ADMIN</b></a>
+  </header>
+  <main class="admin">
+    <section id="login-box">
+      <h1>Вход</h1>
+      <form id="login-form">
+      <label for="login">Логин</label>
+      <input id="login" name="username" autocomplete="username" maxlength="64">
+      <label for="password">Пароль</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" maxlength="128">
+      <div class="row"><button class="dl" type="submit" id="do-login">Войти</button></div>
+      </form>
+      <p class="err" id="login-err"></p>
+    </section>
+    <section id="panel">
+      <h1>Содержание сайта</h1>
+      <p class="hint">Сохранение пишет news.json и content.json. Лаунчер читает тот же news.json.</p>
+      <p class="ok" id="save-ok"></p>
+      <p class="err" id="save-err"></p>
+      <h2>Бегущая строка</h2>
+      <label>Фразы через перевод строки</label>
+      <textarea id="ticker"></textarea>
+      <label>Подзаголовок героя</label>
+      <input id="hero_eyebrow">
+      <label>Заголовок (перевод строки = новая строка)</label>
+      <textarea id="hero_title"></textarea>
+      <label>Лид</label>
+      <textarea id="lede"></textarea>
+      <h2>Картинка или видео на главной</h2>
+      <p class="hint">После загрузки файла нажми «Сохранить» внизу — иначе на главной останется затычка. Не копируй content.json с компьютера на сервер поверх живого.</p>
+      <input id="hero_media" placeholder="/news-media/..." readonly>
+      <img id="hero_preview_img" class="preview" alt="">
+      <video id="hero_preview_vid" class="preview" muted loop playsinline></video>
+      <div class="row">
+        <input id="hero_file" type="file" accept="image/gif,image/png,image/jpeg,image/webp,video/mp4,video/webm">
+        <button class="dl" type="button" id="hero_clear">Убрать медиа</button>
+      </div>
+      <label>Плашка под роликом или картинкой</label>
+      <textarea id="hero_caption" placeholder="Короткий текст под медиа"></textarea>
+      <label>Ширина колонки на главной, % (20–70)</label>
+      <input id="hero_width" type="number" min="20" max="70" step="1" value="36">
+      <label>Высота ролика на главной, px (200–720)</label>
+      <input id="hero_height" type="number" min="200" max="720" step="10" value="560">
+      <h2>Карточки главной</h2>
+      <div id="cards"></div>
+      <div class="row"><button class="dl" type="button" id="add-card">Добавить карточку</button></div>
+      <h2>Кодекс</h2>
+      <label>Подзаголовок</label>
+      <input id="codex_eyebrow">
+      <label>Заголовок (перевод строки = новая строка)</label>
+      <textarea id="codex_title"></textarea>
+      <label>Лид</label>
+      <textarea id="codex_lede"></textarea>
+      <label>Правила — один пункт на строку</label>
+      <textarea id="codex_rules" style="min-height:180px"></textarea>
+      <h2>Вики — Обзор</h2>
+      <label>Название вкладки</label>
+      <input id="wiki_overview_nav">
+      <label>Подзаголовок</label>
+      <input id="wiki_overview_eyebrow">
+      <label>Заголовок</label>
+      <textarea id="wiki_overview_title"></textarea>
+      <div id="wiki-overview-cards"></div>
+      <div class="row"><button class="dl" type="button" id="add-wiki-card">Добавить карточку обзора</button></div>
+      <h2>Вики — Вход</h2>
+      <label>Название вкладки</label>
+      <input id="wiki_join_nav">
+      <label>Подзаголовок</label>
+      <input id="wiki_join_eyebrow">
+      <label>Заголовок</label>
+      <textarea id="wiki_join_title"></textarea>
+      <label>Шаги — один пункт на строку. Файл можно обернуть в `кавычки-ёлочки`</label>
+      <textarea id="wiki_join_list" style="min-height:140px"></textarea>
+      <label>Цитата внизу</label>
+      <textarea id="wiki_join_quote"></textarea>
+      <h2>Вики — Моды</h2>
+      <label>Название вкладки</label>
+      <input id="wiki_mods_nav">
+      <label>Подзаголовок</label>
+      <input id="wiki_mods_eyebrow">
+      <label>Заголовок</label>
+      <textarea id="wiki_mods_title"></textarea>
+      <label>Лид. Ссылки вида MODPACK.md сами станут кликабельными</label>
+      <textarea id="wiki_mods_lede"></textarea>
+      <div id="wiki-mods-tables"></div>
+      <div class="row"><button class="dl" type="button" id="add-wiki-table">Добавить таблицу</button></div>
+      <h2>Новости лаунчера и сайта</h2>
+      <div id="news"></div>
+      <div class="row">
+        <button class="dl" type="button" id="add-news">Добавить новость</button>
+        <button class="dl" type="button" id="do-save">Сохранить</button>
+        <button class="dl" type="button" id="do-logout">Выйти</button>
+      </div>
+    </section>
+  </main>
+  <script>
+    function esc(s) {
+      return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+    const ERR = {
+      need_auth: "Нужен вход",
+      rate_limited: "Слишком много попыток. Подождите.",
+      bad_login: "Неверный логин или пароль",
+      method_denied: "Метод запрещён",
+      forbidden: "Запрос отклонён",
+      bad_json: "Плохой JSON",
+      too_large: "Файл слишком большой. Нужен MP4/WebM до 32 МБ.",
+      bad_type: "Нужен файл MP4, WebM, PNG, JPG, WEBP или GIF.",
+      write_failed: "Не удалось записать файлы",
+      not_found: "Нет такого метода"
+    };
+    async function api(path, body) {
+      const opt = { credentials: "include", headers: { "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" } };
+      if (body !== undefined) {
+        opt.method = "POST";
+        opt.headers["Content-Type"] = "application/json";
+        opt.body = JSON.stringify(body);
+      }
+      const urls = ["/admin/api/" + path, "/admin-api.php?r=" + encodeURIComponent(path)];
+      let last = "Нет связи с сервером входа.";
+      for (let i = 0; i < urls.length; i++) {
+        let r;
+        try { r = await fetch(urls[i], opt); } catch (e) { last = "Нет связи с сервером входа."; continue; }
+        if (r.status === 413) { throw new Error(ERR.too_large); }
+        if (r.status === 404 || r.status === 405 || r.status === 502 || r.status === 503) { last = "Сервер входа не подключён."; continue; }
+        const data = await r.json().catch(() => null);
+        if (!data || typeof data.ok === "undefined") { last = "Сервер входа не подключён."; continue; }
+        if (!r.ok) throw new Error(ERR[data.error] || data.error || "Ошибка входа");
+        if (data.ok !== true) throw new Error(ERR[data.error] || data.error || "Ошибка входа");
+        return data;
+      }
+      throw new Error(last);
+    }
+    async function uploadFile(file, maxBytes) {
+      const max = maxBytes || 32 * 1024 * 1024;
+      if (file.size > max) throw new Error(ERR.too_large);
+      const opt = {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Accept": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+          "Content-Type": "application/octet-stream"
+        },
+        body: file
+      };
+      const urls = ["/admin/api/upload", "/admin-api.php?r=upload"];
+      let last = "Нет связи с сервером входа.";
+      for (let i = 0; i < urls.length; i++) {
+        let r;
+        try { r = await fetch(urls[i], opt); } catch (e) { last = "Нет связи с сервером входа."; continue; }
+        if (r.status === 413) throw new Error(ERR.too_large);
+        if (r.status === 404 || r.status === 405 || r.status === 502 || r.status === 503) { last = "Сервер входа не подключён."; continue; }
+        const data = await r.json().catch(() => null);
+        if (!data || typeof data.ok === "undefined") { last = "Сервер входа не подключён."; continue; }
+        if (!r.ok) throw new Error(ERR[data.error] || data.error || "Не удалось загрузить");
+        if (data.ok !== true) throw new Error(ERR[data.error] || data.error || "Не удалось загрузить");
+        return data;
+      }
+      throw new Error(last);
+    }
+    function newsBlock(it) {
+      const d = document.createElement("div");
+      d.className = "item news-item";
+      d.innerHTML = '<label>Дата</label><input class="n-date">' +
+        '<label>Заголовок</label><input class="n-title">' +
+        '<label>Текст</label><textarea class="n-text"></textarea>' +
+        '<label>Картинка или GIF</label><input class="n-image" placeholder="/news-media/..." readonly>' +
+        '<img class="n-preview preview" alt="">' +
+        '<div class="row"><input class="n-file" type="file" accept="image/gif,image/png,image/jpeg,image/webp">' +
+        '<button type="button" class="dl n-clear">Убрать картинку</button>' +
+        '<button type="button" class="dl n-del">Удалить</button></div>';
+      d.querySelector(".n-date").value = it.date || "";
+      d.querySelector(".n-title").value = it.title || "";
+      d.querySelector(".n-text").value = it.text || "";
+      const imgIn = d.querySelector(".n-image");
+      const prev = d.querySelector(".n-preview");
+      function showImg(src) {
+        imgIn.value = src || "";
+        if (src) { prev.src = src; prev.style.display = "block"; }
+        else { prev.removeAttribute("src"); prev.style.display = "none"; }
+      }
+      showImg(it.image || "");
+      d.querySelector(".n-file").onchange = async (ev) => {
+        const f = ev.target.files && ev.target.files[0];
+        if (!f) return;
+        if (f.size > 8 * 1024 * 1024) { alert(ERR.too_large); return; }
+        try {
+          const out = await uploadFile(f, 8 * 1024 * 1024);
+          showImg(out.image || out.media);
+        } catch (e) {
+          alert(e.message || "Не удалось загрузить");
+        }
+        ev.target.value = "";
+      };
+      d.querySelector(".n-clear").onclick = () => showImg("");
+      d.querySelector(".n-del").onclick = () => d.remove();
+      return d;
+    }
+    function cardBlock(it, cls) {
+      const d = document.createElement("div");
+      d.className = "item " + (cls || "card-item");
+      d.innerHTML = '<label>Заголовок</label><input class="c-title">' +
+        '<label>Текст</label><textarea class="c-text"></textarea>' +
+        '<div class="row"><button type="button" class="dl c-del">Удалить</button></div>';
+      d.querySelector(".c-title").value = it.title || "";
+      d.querySelector(".c-text").value = it.text || "";
+      d.querySelector(".c-del").onclick = () => d.remove();
+      return d;
+    }
+    function tableBlock(t) {
+      const d = document.createElement("div");
+      d.className = "item wiki-table";
+      d.innerHTML = '<label>Заголовок таблицы (можно пусто)</label><input class="t-title">' +
+        '<label>Колонка 1</label><input class="t-h0">' +
+        '<label>Колонка 2</label><input class="t-h1">' +
+        '<label>Строки: ячейка | ячейка</label><textarea class="t-rows" style="min-height:140px"></textarea>' +
+        '<div class="row"><button type="button" class="dl t-del">Удалить таблицу</button></div>';
+      t = t || {};
+      d.querySelector(".t-title").value = t.title || "";
+      const headers = t.headers || [];
+      d.querySelector(".t-h0").value = headers[0] || "";
+      d.querySelector(".t-h1").value = headers[1] || "";
+      d.querySelector(".t-rows").value = (t.rows || []).map((r) => {
+        const a = Array.isArray(r) ? r[0] : "";
+        const b = Array.isArray(r) ? r[1] : "";
+        return (a || "") + " | " + (b || "");
+      }).join("\n");
+      d.querySelector(".t-del").onclick = () => d.remove();
+      return d;
+    }
+    function collectCards(sel) {
+      const cards = [];
+      document.querySelectorAll(sel).forEach((el) => {
+        cards.push({
+          title: el.querySelector(".c-title").value,
+          text: el.querySelector(".c-text").value
+        });
+      });
+      return cards;
+    }
+    function collectTables() {
+      const tables = [];
+      document.querySelectorAll(".wiki-table").forEach((el) => {
+        const rows = [];
+        String(el.querySelector(".t-rows").value || "").split(/\n/).forEach((line) => {
+          const s = line.trim();
+          if (!s) return;
+          const i = s.indexOf("|");
+          if (i < 0) rows.push([s, ""]);
+          else rows.push([s.slice(0, i).trim(), s.slice(i + 1).trim()]);
+        });
+        tables.push({
+          title: el.querySelector(".t-title").value,
+          headers: [el.querySelector(".t-h0").value, el.querySelector(".t-h1").value],
+          rows
+        });
+      });
+      return tables;
+    }
+    function wikiPage(id) {
+      const pages = (window.__contentWiki || []);
+      return pages.find((p) => p && p.id === id) || {};
+    }
+    function showHero(src) {
+      document.getElementById("hero_media").value = src || "";
+      const img = document.getElementById("hero_preview_img");
+      const vid = document.getElementById("hero_preview_vid");
+      const isVid = /\.(mp4|webm)$/i.test(src || "");
+      if (!src) {
+        img.style.display = "none"; img.removeAttribute("src");
+        vid.style.display = "none"; vid.removeAttribute("src");
+        return;
+      }
+      if (isVid) {
+        img.style.display = "none"; img.removeAttribute("src");
+        vid.src = src; vid.style.display = "block"; vid.play().catch(() => {});
+      } else {
+        vid.style.display = "none"; vid.removeAttribute("src");
+        img.src = src; img.style.display = "block";
+      }
+    }
+    function collect() {
+      const news = { items: [] };
+      document.querySelectorAll(".news-item").forEach((el) => {
+        news.items.push({
+          date: el.querySelector(".n-date").value,
+          title: el.querySelector(".n-title").value,
+          text: el.querySelector(".n-text").value,
+          image: el.querySelector(".n-image").value
+        });
+      });
+      const ticker = document.getElementById("ticker").value.split(/\n/).map((s) => s.trim()).filter(Boolean);
+      const heroMedia = document.getElementById("hero_media").value;
+      return {
+        news,
+        content: {
+          ticker,
+          hero_eyebrow: document.getElementById("hero_eyebrow").value,
+          hero_title: document.getElementById("hero_title").value,
+          hero_media: heroMedia,
+          hero_kind: /\.(mp4|webm)$/i.test(heroMedia) ? "video" : "image",
+          hero_caption: document.getElementById("hero_caption").value,
+          hero_width: document.getElementById("hero_width").value,
+          hero_height: document.getElementById("hero_height").value,
+          lede: document.getElementById("lede").value,
+          cards: collectCards(".card-item"),
+          codex: {
+            eyebrow: document.getElementById("codex_eyebrow").value,
+            title: document.getElementById("codex_title").value,
+            lede: document.getElementById("codex_lede").value,
+            rules: document.getElementById("codex_rules").value.split(/\n/).map((s) => s.trim()).filter(Boolean)
+          },
+          wiki: [
+            {
+              id: "overview",
+              nav: document.getElementById("wiki_overview_nav").value,
+              eyebrow: document.getElementById("wiki_overview_eyebrow").value,
+              title: document.getElementById("wiki_overview_title").value,
+              cards: collectCards(".wiki-card-item")
+            },
+            {
+              id: "join",
+              nav: document.getElementById("wiki_join_nav").value,
+              eyebrow: document.getElementById("wiki_join_eyebrow").value,
+              title: document.getElementById("wiki_join_title").value,
+              list: document.getElementById("wiki_join_list").value.split(/\n/).map((s) => s.trim()).filter(Boolean),
+              quote: document.getElementById("wiki_join_quote").value
+            },
+            {
+              id: "mods",
+              nav: document.getElementById("wiki_mods_nav").value,
+              eyebrow: document.getElementById("wiki_mods_eyebrow").value,
+              title: document.getElementById("wiki_mods_title").value,
+              lede: document.getElementById("wiki_mods_lede").value,
+              tables: collectTables()
+            }
+          ]
+        }
+      };
+    }
+    function fill(data) {
+      const newsRoot = document.getElementById("news");
+      newsRoot.innerHTML = "";
+      (data.news && data.news.items ? data.news.items : []).forEach((it) => newsRoot.appendChild(newsBlock(it)));
+      const cardsRoot = document.getElementById("cards");
+      cardsRoot.innerHTML = "";
+      const c = data.content || {};
+      window.__contentWiki = c.wiki || [];
+      (c.cards || []).forEach((it) => cardsRoot.appendChild(cardBlock(it, "card-item")));
+      document.getElementById("ticker").value = (c.ticker || []).join("\n");
+      document.getElementById("hero_eyebrow").value = c.hero_eyebrow || "";
+      document.getElementById("hero_title").value = c.hero_title || "";
+      document.getElementById("lede").value = c.lede || "";
+      showHero(c.hero_media || "");
+      document.getElementById("hero_caption").value = c.hero_caption || "";
+      document.getElementById("hero_width").value = c.hero_width || 36;
+      document.getElementById("hero_height").value = c.hero_height || 560;
+      const cx = c.codex || {};
+      document.getElementById("codex_eyebrow").value = cx.eyebrow || "";
+      document.getElementById("codex_title").value = cx.title || "";
+      document.getElementById("codex_lede").value = cx.lede || "";
+      document.getElementById("codex_rules").value = (cx.rules || []).join("\n");
+      const ov = wikiPage("overview");
+      document.getElementById("wiki_overview_nav").value = ov.nav || "Обзор";
+      document.getElementById("wiki_overview_eyebrow").value = ov.eyebrow || "";
+      document.getElementById("wiki_overview_title").value = ov.title || "";
+      const ovCards = document.getElementById("wiki-overview-cards");
+      ovCards.innerHTML = "";
+      (ov.cards || []).forEach((it) => ovCards.appendChild(cardBlock(it, "wiki-card-item")));
+      const jn = wikiPage("join");
+      document.getElementById("wiki_join_nav").value = jn.nav || "Вход";
+      document.getElementById("wiki_join_eyebrow").value = jn.eyebrow || "";
+      document.getElementById("wiki_join_title").value = jn.title || "";
+      document.getElementById("wiki_join_list").value = (jn.list || []).join("\n");
+      document.getElementById("wiki_join_quote").value = jn.quote || "";
+      const md = wikiPage("mods");
+      document.getElementById("wiki_mods_nav").value = md.nav || "Моды";
+      document.getElementById("wiki_mods_eyebrow").value = md.eyebrow || "";
+      document.getElementById("wiki_mods_title").value = md.title || "";
+      document.getElementById("wiki_mods_lede").value = md.lede || "";
+      const tb = document.getElementById("wiki-mods-tables");
+      tb.innerHTML = "";
+      (md.tables || []).forEach((t) => tb.appendChild(tableBlock(t)));
+    }
+    async function showPanel() {
+      const data = await api("content");
+      fill(data);
+      document.getElementById("login-box").style.display = "none";
+      document.getElementById("panel").style.display = "block";
+    }
+    document.getElementById("login-form").onsubmit = async (ev) => {
+      ev.preventDefault();
+      const err = document.getElementById("login-err");
+      err.textContent = "";
+      try {
+        await api("login", {
+          login: document.getElementById("login").value,
+          password: document.getElementById("password").value
+        });
+        document.getElementById("password").value = "";
+        await showPanel();
+      } catch (e) {
+        err.textContent = e.message || "Ошибка входа";
+      }
+    };
+    document.getElementById("add-news").onclick = () => {
+      document.getElementById("news").appendChild(newsBlock({ date: "", title: "", text: "" }));
+    };
+    document.getElementById("add-card").onclick = () => {
+      document.getElementById("cards").appendChild(cardBlock({ title: "", text: "" }, "card-item"));
+    };
+    document.getElementById("add-wiki-card").onclick = () => {
+      document.getElementById("wiki-overview-cards").appendChild(cardBlock({ title: "", text: "" }, "wiki-card-item"));
+    };
+    document.getElementById("add-wiki-table").onclick = () => {
+      document.getElementById("wiki-mods-tables").appendChild(tableBlock({ title: "", headers: ["", ""], rows: [] }));
+    };
+    document.getElementById("hero_clear").onclick = () => showHero("");
+    document.getElementById("hero_file").onchange = async (ev) => {
+      const f = ev.target.files && ev.target.files[0];
+      if (!f) return;
+      if (f.size > 32 * 1024 * 1024) { alert(ERR.too_large); return; }
+      try {
+        const out = await uploadFile(f, 32 * 1024 * 1024);
+        showHero(out.media || out.image);
+      } catch (e) {
+        alert(e.message || "Не удалось загрузить");
+      }
+      ev.target.value = "";
+    };
+    document.getElementById("do-save").onclick = async () => {
+      document.getElementById("save-ok").textContent = "";
+      document.getElementById("save-err").textContent = "";
+      try {
+        await api("save", collect());
+        document.getElementById("save-ok").textContent = "Сохранено. Сайт и лаунчер читают эти файлы.";
+      } catch (e) {
+        document.getElementById("save-err").textContent = e.message || "Не удалось сохранить";
+      }
+    };
+    document.getElementById("do-logout").onclick = async () => {
+      try { await api("logout", {}); } catch (e) {}
+      location.reload();
+    };
+    api("me").then(showPanel).catch(() => {});
+  </script>
+</body>
+</html>
