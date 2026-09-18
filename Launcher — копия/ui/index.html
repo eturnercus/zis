@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Dynasty of Rot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <div class="ticker" aria-hidden="true"><div class="ticker-track">
+    <span>ВСЕ ГНИЕТ</span><i>✠</i><span>КРОМЕ TPS</span><i>✠</i><span>СЕЗОН VII УЖЕ ЗДЕСЬ</span><i>✠</i><span>ЧИТЕРЫ В ТРАУРЕ</span><i>✠</i><span>ДОНАТ НЕ СПАСЕТ</span><i>✠</i>
+    <span>ВСЕ ГНИЕТ</span><i>✠</i><span>КРОМЕ TPS</span><i>✠</i><span>СЕЗОН VII УЖЕ ЗДЕСЬ</span><i>✠</i><span>ЧИТЕРЫ В ТРАУРЕ</span><i>✠</i><span>ДОНАТ НЕ СПАСЕТ</span><i>✠</i>
+  </div></div>
+  <header class="bar">
+    <div class="logo"><img src="/img/crown.svg" alt="">DYNASTY <em>OF</em> ROT</div>
+    <div class="nav">
+      <button data-tab="news" class="on">ХРОНИКА</button>
+      <button data-tab="rules">КОДЕКС</button>
+      <button data-tab="settings">НАСТРОЙКИ</button>
+    </div>
+    <div class="status" id="status">сезон vii</div>
+  </header>
+  <main class="stage">
+    <section id="news">
+      <h1>Всё гниёт.<br>Кроме слота.</h1>
+      <p class="lede">Ник, память, кнопка. Лаунчер дотащит клиентские моды. Окно не закрывать — иначе двор решит, что вас уже нет.</p>
+      <article class="card"><h3>Сегодня</h3><p>Youer 48ee2281 · NeoForge 21.1.248. Sodium живёт здесь, не на dedicated.</p></article>
+      <pre class="log" id="log">Готов к работе.</pre>
+    </section>
+    <section id="rules" class="hidden">
+      <h1>Кодекс</h1>
+      <article class="card">
+        <ol>
+          <li>Только этот лаунчер.</li>
+          <li>Гриферство и дюп — архив.</li>
+          <li>Баг — письмо, не контент.</li>
+          <li>Чанки колоний — не склад.</li>
+        </ol>
+      </article>
+    </section>
+    <section id="settings" class="hidden">
+      <h1>Настройки</h1>
+      <label>Память, МБ</label>
+      <input id="ram" type="number" min="4096" max="32768" step="512" value="8192">
+      <label>Папка игры</label>
+      <input id="gamedir" value="">
+    </section>
+  </main>
+  <footer class="dock">
+    <input id="nick" placeholder="НИКНЕЙМ" maxlength="16" autocomplete="off">
+    <div id="serverHint">play.inflexus.world:25565</div>
+    <button class="play" id="play">ИГРАТЬ</button>
+    <div class="hint" id="hint">Не закрывайте лаунчер, пока играете.</div>
+  </footer>
+  <script src="/app.js"></script>
+</body>
+</html>

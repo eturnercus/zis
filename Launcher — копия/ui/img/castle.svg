@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" fill="none">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1a0a28"/>
+      <stop offset="1" stop-color="#050208"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="400" fill="url(#sky)"/>
+  <circle cx="470" cy="92" r="54" fill="#f3e6c8" opacity=".9"/>
+  <circle cx="458" cy="88" r="54" fill="#1a0a28"/>
+  <g fill="#0a0410">
+    <path d="M80 360 L80 210 L130 210 L130 150 L180 150 L180 210 L230 210 L250 140 L320 90 L390 140 L410 210 L460 210 L460 150 L510 150 L510 210 L560 210 L560 360 Z"/>
+    <rect x="150" y="230" width="28" height="50"/>
+    <rect x="300" y="200" width="40" height="70"/>
+    <rect x="460" y="230" width="28" height="50"/>
+    <polygon points="250,140 320,70 390,140"/>
+  </g>
+  <g fill="#d7b4f5" opacity=".85">
+    <path d="M90 70 C100 62, 108 62, 112 70 C108 68, 100 68, 90 70"/>
+    <path d="M200 50 C212 40, 224 40, 230 52 C224 48, 212 48, 200 50"/>
+    <path d="M540 120 C552 112, 562 112, 568 122 C562 118, 552 118, 540 120"/>
+  </g>
+  <rect y="330" width="640" height="70" fill="#050208"/>
+</svg>
